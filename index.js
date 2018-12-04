@@ -6,7 +6,9 @@ const bodyParser = require("body-parser");
 app.use(bodyParser.json());
 const mongoose = require("mongoose");
 mongoose.connect(
-  "mongodb://localhost:27017/test-it",
+  process.env.MONGODB_URI
+    ? process.env.MONGODB_URI
+    : "mongodb://localhost:27017/test-it",
   { useNewUrlParser: true, useCreateIndex: true }
 );
 
@@ -15,6 +17,6 @@ mongoose.connect(
 var connexionRoutes = require("./parts/connexion.js");
 app.use(connexionRoutes);
 
-app.listen(3000, function() {
+app.listen(process.env.MONGODB_URI || 3000, function() {
   console.log("Server has started");
 });
