@@ -1,0 +1,28 @@
+{
+  "name": "test-it-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AGatinet/test-it-backend.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AGatinet/test-it-backend/issues"
+  },
+  "homepage": "https://github.com/AGatinet/test-it-backend#readme",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "crypto-js": "^3.1.9-1",
+    "express": "^4.16.4",
+    "mongoose": "^5.3.14",
+    "navigator": "^1.0.1",
+    "uid2": "0.0.3",
+    "validator": "^10.9.0"
+  }
+}
