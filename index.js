@@ -8,7 +8,7 @@ const mongoose = require("mongoose");
 mongoose.connect(
 	process.env.MONGODB_URI
 		? process.env.MONGODB_URI
-		: "mongodb://localhost:27017/test-it",
+		: "mongodb://heroku_fvvkbxfv:m7gb3ikcpt60e1v2shofr8gkb3@ds125680.mlab.com:25680/heroku_fvvkbxfv",
 	{ useNewUrlParser: true, useCreateIndex: true }
 );
 
@@ -16,7 +16,9 @@ mongoose.connect(
 
 var connexionRoutes = require("./parts/connexion.js");
 app.use(connexionRoutes);
+var homeRoutes = require("./parts/home.js");
+app.use(homeRoutes);
 
-app.listen(process.env.MONGODB_URI || 3000, function() {
+app.listen(process.env.PORT || 3000, function() {
 	console.log("Server has started");
 });
