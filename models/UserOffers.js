@@ -1,4 +1,6 @@
-var UserOffersSchema = new mongoose.Schema({
+const mongoose = require("mongoose");
+
+const UserOffersSchema = new mongoose.Schema({
 	favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: "Offer" }],
 	pendingValidation: [{ type: mongoose.Schema.Types.ObjectId, ref: "Offer" }],
 	pending: [{ type: mongoose.Schema.Types.ObjectId, ref: "Offer" }],
