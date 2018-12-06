@@ -1,11 +1,11 @@
-var mongoose = require("mongoose");
+const mongoose = require("mongoose");
 
-var Offer = new mongoose.Schema({
+const Offer = new mongoose.Schema({
 	offerName: { type: String, required: true },
-	creationDate: { type: Date, required: false, default: Date.now },
+	creationDate: { type: Date, default: Date.now },
 	deadlineInscription: { type: Date, required: true, default: Date.now },
 	deadlineTest: { type: Date, required: true },
-	duration: { type: Number, required: true },
+	duration: { type: String, required: true },
 	picture: String,
 	ageMin: { type: Number, default: 16 },
 	ageMax: { type: Number, default: 100 },
@@ -24,9 +24,9 @@ var Offer = new mongoose.Schema({
 		{ postCode: Number }
 	],
 	description: String,
-	wantedProfiles: { type: String, required: true },
-	conditions: { type: String, required: true },
-	availabilities: { type: Number, required: true },
+	wantedProfiles: { type: String, required: false },
+	conditions: { type: String, required: false },
+	availabilities: { type: Number, required: false },
 	price: { type: Number, required: true },
 	typeOffer: { type: String, required: true },
 	industry: { type: mongoose.Schema.Types.ObjectId, ref: "Industry" },
