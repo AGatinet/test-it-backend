@@ -11,17 +11,17 @@ const Offer = new mongoose.Schema({
 	ageMax: { type: Number, default: 100 },
 	genderTarget: { type: String, default: "both" },
 	adress: [
-		{
-			latitude: Number,
-			longitude: Number,
-			latitudeDelta: Number,
-			longitudeDelta: Number
-		},
-		{ country: String },
-		{ city: String },
-		{ street: String },
-		{ number: Number },
-		{ postCode: Number }
+		// {
+		// 	latitude: Number,
+		// 	longitude: Number,
+		// 	latitudeDelta: Number,
+		// 	longitudeDelta: Number
+		// },
+		// { country: String },
+		// { city: String },
+		// { street: String },
+		// { number: Number },
+		// { postCode: Number }
 	],
 	description: String,
 	wantedProfiles: { type: String, required: false },
