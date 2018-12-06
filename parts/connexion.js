@@ -11,30 +11,34 @@ var validator = require("validator");
 var User = require("../models/User");
 
 app.post("/sign_up", function(req, res) {
-  if (validator.isEmail(req.body.email) === false) {
-    return res.status(400).json({ message: "Invalid email" });
-  }
-
   const password = req.body.password;
   const salt = uid2(16);
   const hash = SHA256(password + salt).toString(encBase64);
-
-  const newUser = new User({
-    email: req.body.email,
-    token: uid2(16),
-    salt: salt,
-    hash: hash
-  });
-
-  newUser.save(function(err, userSaved) {
-    if (err) {
-      res.status(400).json("err: err.message");
+  if (validator.isEmail(req.body.email) === false) {
+    return res.status(400).json({ message: "Invalid email" });
+  }
+  User.findOne({ email: req.body.email }).exec(function(err, user) {
+    if (user) {
+      res.status(400).json("err");
     } else {
-      res.json({
-        _id: userSaved._id,
-        token: userSaved.token,
-        email: userSaved.email,
-        account: userSaved.account
+      const newUser = new User({
+        email: req.body.email,
+        token: uid2(16),
+        salt: salt,
+        hash: hash
+      }); // newUser est une instance du model User
+
+      newUser.save(function(err, userSaved) {
+        if (err) {
+          res.status(400).json({ error: err.message });
+        } else {
+          res.json({
+            _id: userSaved._id,
+            token: userSaved.token,
+            email: userSaved.email,
+            account: userSaved.account
+          });
+        }
       });
     }
   });
