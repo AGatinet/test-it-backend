@@ -1,10 +1,14 @@
 //importer les dépendances
 
 const express = require("express");
+const cors = require("cors");
 const app = express();
+app.use(cors());
 const bodyParser = require("body-parser");
 app.use(bodyParser.json());
+
 const mongoose = require("mongoose");
+
 mongoose.connect(
 	process.env.MONGODB_URI
 		? process.env.MONGODB_URI
@@ -18,7 +22,11 @@ var connexionRoutes = require("./parts/connexion.js");
 app.use(connexionRoutes);
 var homeRoutes = require("./parts/home.js");
 app.use(homeRoutes);
+var publishRoutes = require("./parts/publish.js");
+app.use(publishRoutes);
+var connexionCompanyRoutes = require("./parts/connexionCompany.js");
+app.use(connexionCompanyRoutes);
 
-app.listen(process.env.PORT || 3000, function() {
+app.listen(process.env.PORT || 3001, function() {
 	console.log("Server has started");
 });

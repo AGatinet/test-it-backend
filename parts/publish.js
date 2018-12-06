@@ -4,13 +4,14 @@ const bodyParser = require("body-parser");
 app.use(bodyParser.json());
 
 const Offer = require("../models/Offer");
+const CompanyOffers = require("../models/CompanyOffers");
 
 app.post("/publish", function(req, res) {
 	const newOffer = new Offer({
 		offerName: req.body.offerName,
 		creationDate: req.body.creationDate,
 		deadlineInscription: req.body.deadlineInscription,
-		dateFinalTest: req.body.dateFinalTest,
+		deadlineTest: req.body.deadlineTest,
 		duration: req.body.duration,
 		picture: req.body.picture,
 		adress: {
@@ -29,9 +30,13 @@ app.post("/publish", function(req, res) {
 		conditions: req.body.conditions,
 		availabilities: req.body.availabilities,
 		price: req.body.price,
-		typeOffer: req.body.typeOffer
+		typeOffer: req.body.typeOffer,
+		ageMin: req.body.ageMin,
+		ageMax: req.body.ageMax,
+		company: req.body.company,
+		genderTarget: req.body.genderTarget
 	});
-
+	console.log(req.body.company);
 	// Sauvegarder l’offre
 	newOffer.save(function(err, offerSaved) {
 		if (err) {
@@ -44,3 +49,5 @@ app.post("/publish", function(req, res) {
 		}
 	});
 });
+
+module.exports = app;
