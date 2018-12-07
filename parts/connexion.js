@@ -100,3 +100,31 @@ app.post("/user/update", function(req, res) {
 });
 
 module.exports = app;
+
+// User.findByIdAndUpdate(
+//   { _id: req.body._id },
+//   {
+//     $set: {
+//       account: {
+//         age: req.body.age,
+//         sex: req.body.sex,
+//         firstName: req.body.firstName,
+//         lastName: req.body.lastName
+//       }
+//     }
+//   },
+//   { new: true },
+//   function(err, user) {
+//     if (err) {
+//       res.json({ error: err.message });
+//     } else {
+//       console.log(user);
+//       if (user === null) {
+//         res.status(400).json("user not found");
+//       } else {
+//         res.status(200).json(user);
+//       }
+//       // ES6
+//     }
+//   }
+// );

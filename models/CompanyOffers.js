@@ -1,11 +1,13 @@
-var CompanyOffersSchema = new mongoose.Schema({
-  created: [{ type: mongoose.Schema.Types.ObjectId, ref: "Offer" }],
-  pending: [{ type: mongoose.Schema.Types.ObjectId, ref: "Offer" }],
-  history: [{ type: mongoose.Schema.Types.ObjectId, ref: "Offer" }]
+const mongoose = require("mongoose");
+
+const CompanyOffersSchema = new mongoose.Schema({
+	created: [{ type: mongoose.Schema.Types.ObjectId, ref: "Offer" }],
+	pending: [{ type: mongoose.Schema.Types.ObjectId, ref: "Offer" }],
+	history: [{ type: mongoose.Schema.Types.ObjectId, ref: "Offer" }]
 });
 
 module.exports = mongoose.model(
-  "CompanyOffers",
-  CompanyOffersSchema,
-  "CompanyOffers"
+	"CompanyOffers",
+	CompanyOffersSchema,
+	"CompanyOffers"
 );
