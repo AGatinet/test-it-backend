@@ -52,11 +52,14 @@ app.post("/addRemoveTester", function(req, res) {
       ) {
         // Ajouter dans le tableau pendingValidation
         UserFound.account.userOffers.pendingValidation.push(Offer_id);
+        // Retirer l'annonce des favoris
+        let k = UserFound.account.userOffers.favorites.indexOf(Offer_id);
+        UserFound.account.userOffers.favorites.splice(k, 1);
         UserFound.save(function(err, UserSaved) {
           res.json("Annonce ajoutée");
         });
       } else {
-        // Retirer dans le tableau pendingValidation et pending
+        // Retirer l'id de l'offre dans favoris, pendingValidation et pending
         let i = UserFound.account.userOffers.pending.indexOf(Offer_id);
         let j = UserFound.account.userOffers.pendingValidation.indexOf(
           Offer_id
