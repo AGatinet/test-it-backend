@@ -56,7 +56,7 @@ app.post("/publish", function(req, res) {
 		.then(address => {
 			const newOffer = new Offer({
 				offerName: req.body.offerName,
-				creationDate: req.body.creationDate,
+				// creationDate: req.body.creationDate,
 				deadlineInscription: req.body.deadlineInscription,
 				deadlineTest: req.body.deadlineTest,
 				duration: req.body.duration,
