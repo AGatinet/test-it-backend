@@ -12,7 +12,7 @@ app.get("/favories/:id", function(req, res, next) {
     .populate("account.userOffers.favorites")
     .exec(function(err, Offers) {
       if (err) return handleError(err);
-      res.json(Offers);
+      res.json(Offers.account.userOffers.favorites);
     });
 });
 
@@ -22,7 +22,7 @@ app.get("/pendingValidation/:id", function(req, res, next) {
     .populate("account.userOffers.pendingValidation")
     .exec(function(err, Offers) {
       if (err) return handleError(err);
-      res.json(Offers);
+      res.json(Offers.account.userOffers.pendingValidation);
     });
 });
 
@@ -32,7 +32,7 @@ app.get("/pending/:id", function(req, res, next) {
     .populate("account.userOffers.pending")
     .exec(function(err, Offers) {
       if (err) return handleError(err);
-      res.json(Offers);
+      res.json(Offers.account.userOffers.pending);
     });
 });
 
@@ -42,7 +42,7 @@ app.get("/history/:id", function(req, res, next) {
     .populate("account.userOffers.history")
     .exec(function(err, Offers) {
       if (err) return handleError(err);
-      res.json(Offers);
+      res.json(Offers.account.userOffers.history);
     });
 });
 
