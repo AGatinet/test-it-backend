@@ -11,26 +11,34 @@ const UserSchema = new mongoose.Schema({
     lastName: String,
     birthDate: Date,
     sex: String,
-    adress: [
-      {
-        latitude: Number,
-        longitude: Number,
-        latitudeDelta: Number,
-        longitudeDelta: Number
-      },
-      { country: String },
-      { city: String },
-      { street: String },
-      { number: Number },
-      { postCode: Number }
-    ],
+    address: {
+      country: String,
+      city: String,
+      street: String,
+      number: Number,
+      postCode: Number
+    },
+    geolocation: {
+      latitude: Number,
+      longitude: Number,
+      latitudeDelta: Number,
+      longitudeDelta: Number
+    },
     phone: String,
     bankAmount: Number,
     description: String,
     bankAccount: { bic: String, iban: String },
     photo: String,
-    criterias: [{ type: mongoose.Schema.Types.ObjectId, ref: "Criteria" }],
-    userOffers: { type: mongoose.Schema.Types.ObjectId, ref: "Offer" }
+    userOffers: {
+      favorites: [{ type: mongoose.Schema.Types.ObjectId, ref: "Offer" }],
+      pendingValidation: [
+        { type: mongoose.Schema.Types.ObjectId, ref: "Offer" }
+      ],
+      pending: [{ type: mongoose.Schema.Types.ObjectId, ref: "Offer" }],
+      history: [{ type: mongoose.Schema.Types.ObjectId, ref: "Offer" }]
+    },
+    pendingPayment: [{ type: mongoose.Schema.Types.ObjectId, ref: "Offer" }],
+    criterias: [{ type: mongoose.Schema.Types.ObjectId, ref: "Criteria" }]
   }
 });
 

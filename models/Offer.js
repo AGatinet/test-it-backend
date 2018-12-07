@@ -31,12 +31,7 @@ const Offer = new mongoose.Schema({
 	typeOffer: { type: String, required: true },
 	industry: { type: mongoose.Schema.Types.ObjectId, ref: "Industry" },
 	criterias: [{ type: mongoose.Schema.Types.ObjectId, ref: "Criteria" }],
-	listTesters: [
-		{
-			status: String,
-			user: { type: mongoose.Schema.Types.ObjectId, ref: "User" }
-		}
-	],
+	listTesters: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
 	company: {
 		type: mongoose.Schema.Types.ObjectId,
 		ref: "Company"
