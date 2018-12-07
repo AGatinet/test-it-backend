@@ -39,7 +39,6 @@ var UserSchema = new mongoose.Schema({
     },
     pendingPayment: [{ type: mongoose.Schema.Types.ObjectId, ref: "Offer" }],
     criterias: [{ type: mongoose.Schema.Types.ObjectId, ref: "Criteria" }]
-    // userOffers: { type: mongoose.Schema.Types.ObjectId, ref: "Offer" }
   }
 });
 
