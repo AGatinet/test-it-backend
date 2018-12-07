@@ -14,5 +14,4 @@ app.get("/home", function(req, res) {
 		res.json(result);
 	});
 });
-console.log("toto");
 module.exports = app;
