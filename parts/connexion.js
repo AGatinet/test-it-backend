@@ -73,7 +73,7 @@ app.post("/user/update", function(req, res) {
       // erreur ou user not found
       res.status(400).json({ message: "An error occurred" });
     } else {
-      user.account.age = req.body.age || user.account.age;
+      user.account.birthDate = req.body.birthDate || user.account.birthDate;
       user.account.sex = req.body.sex || user.account.sex;
       user.account.firstName = req.body.firstName || user.account.firstName;
       user.account.lastName = req.body.lastName || user.account.lastName;
@@ -92,6 +92,7 @@ app.post("/user/update", function(req, res) {
         if (err) {
           res.status(400).json({ message: "An error occurred" });
         } else {
+          console.log(user);
           res.status(200).json(user);
         }
       });
@@ -100,31 +101,3 @@ app.post("/user/update", function(req, res) {
 });
 
 module.exports = app;
-
-// User.findByIdAndUpdate(
-//   { _id: req.body._id },
-//   {
-//     $set: {
-//       account: {
-//         age: req.body.age,
-//         sex: req.body.sex,
-//         firstName: req.body.firstName,
-//         lastName: req.body.lastName
-//       }
-//     }
-//   },
-//   { new: true },
-//   function(err, user) {
-//     if (err) {
-//       res.json({ error: err.message });
-//     } else {
-//       console.log(user);
-//       if (user === null) {
-//         res.status(400).json("user not found");
-//       } else {
-//         res.status(200).json(user);
-//       }
-//       // ES6
-//     }
-//   }
-// );
