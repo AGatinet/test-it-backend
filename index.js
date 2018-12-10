@@ -37,7 +37,7 @@ app.use(publishRoutes);
 var connexionCompanyRoutes = require("./parts/connexionCompany.js");
 app.use(connexionCompanyRoutes);
 
-app.listen(process.env.PORT || 3000, function() {
+app.listen(process.env.PORT || 3001, function() {
 	console.log("Server has started");
-	console.log(process.env.PORT || 3000);
+	console.log(process.env.PORT || 3001);
 });
