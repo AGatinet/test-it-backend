@@ -7,7 +7,7 @@ const Offer = require("../models/Offer");
 
 app.get("/home", function(req, res) {
 	Offer.find({
-		$or: [{ genderTarget: req.query.genderTarget }, { genderTarget: "both" }],
+		$or: [{ genderTarget: req.query.genderTarget }, { genderTarget: "" }],
 		ageMax: { $gte: req.query.age },
 		ageMin: { $lte: req.query.age }
 	})
@@ -18,37 +18,107 @@ app.get("/home", function(req, res) {
 });
 
 app.get("/home/with-count", function(req, res) {
-	const filter = {
-		$or: [{ genderTarget: req.query.genderTarget }, { genderTarget: "both" }],
-		ageMax: { $gte: req.query.age },
-		ageMin: { $lte: req.query.age }
-	};
-	if (
-		(req.query.priceMin !== undefined && req.query.priceMin !== "") ||
-		(req.query.priceMax !== undefined && req.query.priceMax !== "")
-	) {
-		filter.price = {};
-		if (req.query.priceMin) {
-			filter.price["$gte"] = req.query.priceMin;
-		}
-
-		if (req.query.priceMax) {
-			filter.price["$lte"] = req.query.priceMax;
-		}
-	}
-
-	if (req.query.title) {
-		filter.title = {
-			$regex: req.query.title,
-			$options: "i"
+	let filter = {};
+	if (!req.query.title) {
+		filter = {
+			$or: [{ genderTarget: req.query.genderTarget }, { genderTarget: "" }],
+			ageMax: { $gte: req.query.age },
+			ageMin: { $lte: req.query.age }
 		};
+		if (
+			(req.query.priceMin !== undefined && req.query.priceMin !== "") ||
+			(req.query.priceMax !== undefined && req.query.priceMax !== "")
+		) {
+			filter.price = {};
+			if (req.query.priceMin) {
+				filter.price["$gte"] = req.query.priceMin;
+			}
+
+			if (req.query.priceMax) {
+				filter.price["$lte"] = req.query.priceMax;
+			}
+		}
+	} else {
+		filter = {
+			// $and: [
+			// 	{
+			$or: [{ genderTarget: req.query.genderTarget }, { genderTarget: "" }],
+			// },
+			// {
+			// $or: [
+			// 	{
+			// 		offerName: {
+			// 			$regex: req.query.title,
+			// 			$options: "i"
+			// 		}
+			// 	}
+			// {
+			// 	company: {
+			// 		companyAccount: {
+			// 			companyName: {
+			// 				$regex: req.query.title,
+			// 				$options: "i"
+			// 			}
+			// 		}
+			// 	}
+			// }
+			// ]
+			// 	}
+			// ],
+
+			ageMax: { $gte: req.query.age },
+			ageMin: { $lte: req.query.age }
+		};
+		if (
+			(req.query.priceMin !== undefined && req.query.priceMin !== "") ||
+			(req.query.priceMax !== undefined && req.query.priceMax !== "")
+		) {
+			filter.price = {};
+			if (req.query.priceMin) {
+				filter.price["$gte"] = req.query.priceMin;
+			}
+
+			if (req.query.priceMax) {
+				filter.price["$lte"] = req.query.priceMax;
+			}
+		}
 	}
+	// if (req.query.title) {
+	// 	// title = [];
+	// 	// title.offerName = {
+	// 	// 	$regex: req.query.title,
+	// 	// 	$options: "i"
+	// 	// };
+	// 	// title.companyName = {
+	// 	// 	$regex: req.query.title,
+	// 	// 	$options: "i"
+	// 	// };
+	// 	(filter["$and"] = {
+	// 		$or: [
+	// 			{
+	// 				offerName: {
+	// 					$regex: req.query.title,
+	// 					$options: "i"
+	// 				}
+	// 			},
+	// 			{
+	// 				companyName: {
+	// 					$regex: req.query.title,
+	// 					$options: "i"
+	// 				}
+	// 			}
+	// 		]
+	// 	}),
+	// 		{ $or: [{ genderTarget: req.query.genderTarget }, { genderTarget: "" }] };
+	// 	// console.log(filter.title);
+	// }
 
 	Offer.count(filter, (err, count) => {
 		// const query = Offer.find(filter).populate({
 		// 	path: "creator",
 		// 	select: "account"
 		// });
+		// console.log(filter);
 		const query = Offer.find(filter).populate("company");
 
 		// if (req.query.skip !== undefined) {
@@ -86,7 +156,27 @@ app.get("/home/with-count", function(req, res) {
 		}
 
 		query.exec((err, offers) => {
-			res.json({ count, offers });
+			if (!req.query.title) {
+				res.json({ count, offers });
+			} else {
+				const result = offers.filter(function(offer) {
+					return (
+						offer["offerName"] ==
+						{
+							$regex: req.query.title,
+							$options: "i"
+						}
+						// ||
+						// offer["company"]["companyAccount"]["companyName"] ==
+						// 	{
+						// 		$regex: req.query.title,
+						// 		$options: "i"
+						// 	}
+					);
+				});
+				console.log(result);
+				res.json({ result });
+			}
 		});
 	});
 });
