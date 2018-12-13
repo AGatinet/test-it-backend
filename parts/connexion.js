@@ -11,30 +11,34 @@ var validator = require("validator");
 var User = require("../models/User");
 
 app.post("/sign_up", function(req, res) {
-  if (validator.isEmail(req.body.email) === false) {
-    return res.status(400).json({ message: "Invalid email" });
-  }
-
   const password = req.body.password;
   const salt = uid2(16);
   const hash = SHA256(password + salt).toString(encBase64);
-
-  const newUser = new User({
-    email: req.body.email,
-    token: uid2(16),
-    salt: salt,
-    hash: hash
-  });
-
-  newUser.save(function(err, userSaved) {
-    if (err) {
-      res.status(400).json("err: err.message");
+  if (validator.isEmail(req.body.email) === false) {
+    return res.status(400).json({ message: "Invalid email" });
+  }
+  User.findOne({ email: req.body.email }).exec(function(err, user) {
+    if (user) {
+      res.status(400).json("err");
     } else {
-      res.json({
-        _id: userSaved._id,
-        token: userSaved.token,
-        email: userSaved.email,
-        account: userSaved.account
+      const newUser = new User({
+        email: req.body.email,
+        token: uid2(16),
+        salt: salt,
+        hash: hash
+      }); // newUser est une instance du model User
+
+      newUser.save(function(err, userSaved) {
+        if (err) {
+          res.status(400).json({ error: err.message });
+        } else {
+          res.json({
+            _id: userSaved._id,
+            token: userSaved.token,
+            email: userSaved.email,
+            account: userSaved.account
+          });
+        }
       });
     }
   });
@@ -69,7 +73,7 @@ app.post("/user/update", function(req, res) {
       // erreur ou user not found
       res.status(400).json({ message: "An error occurred" });
     } else {
-      user.account.age = req.body.age || user.account.age;
+      user.account.birthDate = req.body.birthDate || user.account.birthDate;
       user.account.sex = req.body.sex || user.account.sex;
       user.account.firstName = req.body.firstName || user.account.firstName;
       user.account.lastName = req.body.lastName || user.account.lastName;
@@ -88,6 +92,7 @@ app.post("/user/update", function(req, res) {
         if (err) {
           res.status(400).json({ message: "An error occurred" });
         } else {
+          console.log(user);
           res.status(200).json(user);
         }
       });
@@ -96,31 +101,3 @@ app.post("/user/update", function(req, res) {
 });
 
 module.exports = app;
-
-// User.findByIdAndUpdate(
-//   { _id: req.body._id },
-//   {
-//     $set: {
-//       account: {
-//         age: req.body.age,
-//         sex: req.body.sex,
-//         firstName: req.body.firstName,
-//         lastName: req.body.lastName
-//       }
-//     }
-//   },
-//   { new: true },
-//   function(err, user) {
-//     if (err) {
-//       res.json({ error: err.message });
-//     } else {
-//       console.log(user);
-//       if (user === null) {
-//         res.status(400).json("user not found");
-//       } else {
-//         res.status(200).json(user);
-//       }
-//       // ES6
-//     }
-//   }
-// );
