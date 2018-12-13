@@ -4,7 +4,7 @@ const bodyParser = require("body-parser");
 app.use(bodyParser.json());
 
 const Offer = require("../models/Offer");
-const CompanyOffers = require("../models/CompanyOffers");
+const uploadPictures = require("./uploadPictures");
 const NodeGeocoder = require("node-geocoder");
 
 const options = {
@@ -19,7 +19,16 @@ const options = {
 
 const geocoder = NodeGeocoder(options);
 
-app.post("/publish", function(req, res) {
+// Importation de Cloudinary
+const cloudinary = require("cloudinary");
+// Configuration de Cloudinary
+cloudinary.config({
+	cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+	api_key: process.env.CLOUDINARY_API_KEY,
+	api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+app.post("/publish", uploadPictures, function(req, res) {
 	const geocoding = new Promise((resolve, reject) => {
 		// Using callback
 		geocoder.geocode(

@@ -155,30 +155,32 @@ app.get("/home/with-count", function(req, res) {
         break;
     }
 
-    query.exec((err, offers) => {
-      if (!req.query.title) {
-        res.json({ count, offers });
-      } else {
-        const result = offers.filter(function(offer) {
-          return (
-            offer["offerName"] ==
-            {
-              $regex: req.query.title,
-              $options: "i"
-            }
-            // ||
-            // offer["company"]["companyAccount"]["companyName"] ==
-            // 	{
-            // 		$regex: req.query.title,
-            // 		$options: "i"
-            // 	}
-          );
-        });
-        console.log(result);
-        res.json({ result });
-      }
-    });
-  });
+
+		query.exec((err, offers) => {
+			if (!req.query.title) {
+				res.json({ count, offers });
+			} else {
+				const regex = new RegExp(req.query.title.toLowerCase(), "g");
+				const result1 = offers.filter(({ offerName }) => {
+					return offerName.toLowerCase().match(regex);
+				});
+				const result2 = offers.filter(offer => {
+					// company: {companyAccount:{ companyName}}})
+					if (
+						offer.company.companyAccount.companyName.toLowerCase().match(regex)
+					) {
+						return true;
+					}
+					return false;
+				});
+				// console.log("toto", result1.concat(result2));
+				res.json({
+					offers: result1.concat(result2)
+				});
+			}
+		});
+	});
+
 });
 
 module.exports = app;
