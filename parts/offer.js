@@ -8,14 +8,12 @@ const User = require("../models/User");
 
 // 1ère route : charger une annonce   ==================================================
 app.get("/offer/:id", function(req, res, next) {
-  Offer.findOne({ _id: req.params.id }).exec(function(err, OfferFound) {
-    if (err) return res.json("Aucune offre trouvée.");
-    if (OfferFound) {
-      res.json(OfferFound);
-    } else {
-      res.json("Aucune offre trouvée.");
-    }
-  });
+  Offer.findById(req.params.id)
+    .populate("company")
+    .exec(function(err, Offers) {
+      if (err) return handleError(err);
+      res.json(Offers);
+    });
 });
 
 // 2ème route : S'inscrire / Se désincrire  =========================================================
@@ -56,7 +54,9 @@ app.post("/addRemoveTester", function(req, res) {
         let k = UserFound.account.userOffers.favorites.indexOf(Offer_id);
         UserFound.account.userOffers.favorites.splice(k, 1);
         UserFound.save(function(err, UserSaved) {
-          res.json("Annonce ajoutée");
+          res.json(
+            "Inscription enregistrée avec succès ! \n Vous recevrez une confirmation de votre inscription par sms."
+          );
         });
       } else {
         // Retirer l'id de l'offre dans favoris, pendingValidation et pending
@@ -67,7 +67,9 @@ app.post("/addRemoveTester", function(req, res) {
         UserFound.account.userOffers.pending.splice(i, 1);
         UserFound.account.userOffers.pendingValidation.splice(j, 1);
         UserFound.save(function(err, UserSaved) {
-          res.json("Annonce retirée");
+          res.json(
+            "Votre désinscription à été enregistrée. \n Au plaisir de vous revoir très prochainement sur Test-it !"
+          );
         });
       }
     }
@@ -89,14 +91,14 @@ app.post("/addToFavorite", function(req, res) {
         // Mettre en favoris
         UserFound.account.userOffers.favorites.push(Offer_id);
         UserFound.save(function(err, UserSaved) {
-          res.json("Offre ajoutée aux favoris.");
+          res.json("Cette offre est sauvegardée dans l'univers Mes Offres.");
         });
       } else {
         // Retirer des favoris
         let i = UserFound.account.userOffers.favorites.indexOf(Offer_id);
         UserFound.account.userOffers.favorites.splice(i, 1);
         UserFound.save(function(err, UserSaved) {
-          res.json("Offre retirée des favoris.");
+          res.json("Cette offre à été retirée de l'univers Mes Offres.");
         });
       }
     }
