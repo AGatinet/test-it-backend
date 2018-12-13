@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 app.use(bodyParser.json());
 
 const Offer = require("../models/Offer");
+const User = require("../models/User");
 const uploadPictures = require("./uploadPictures");
 const NodeGeocoder = require("node-geocoder");
 
@@ -28,7 +29,32 @@ cloudinary.config({
 	api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
+const { Expo } = require("expo-server-sdk");
+const expo = new Expo();
+
 app.post("/publish", uploadPictures, function(req, res) {
+	// NOTIFICATION LISTE D'ENVOIE
+	const notificationTokens = [];
+	if (req.body.genderTarget) {
+		User.find({
+			$or: [{ "account.sex": req.body.genderTarget }, { "account.sex": "" }]
+		}).exec(function(err, result) {
+			const today = new Date();
+			for (i = 0; i < result.length; i++) {
+				const birthDate = new Date(result[i].account.birthDate);
+				const age = today.getFullYear() - birthDate.getFullYear();
+				// console.log(age);
+				// console.log("agemin", req.body.ageMin);
+				// console.log("agemax", req.body.ageMax);
+				if (age >= req.body.ageMin || age <= req.body.ageMax) {
+					notificationTokens.push(result[i].tokenNotifications);
+					// console.log(result.tokenNotifications);
+				}
+			}
+			// console.log("notiftokens", notificationTokens);
+		});
+	}
+
 	const geocoding = new Promise((resolve, reject) => {
 		// Using callback
 		geocoder.geocode(
@@ -93,6 +119,50 @@ app.post("/publish", uploadPictures, function(req, res) {
 					);
 				}
 			});
+			// NOTIFICATION MESSAGES
+			// Create the messages that you want to send to clents
+			let messages = [];
+			for (let pushToken of notificationTokens) {
+				// Each push token looks like ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]
+				// console.log("pushToken : ", pushToken);
+				// Check that all your push tokens appear to be valid Expo push tokens
+				if (!Expo.isExpoPushToken(pushToken)) {
+					console.error(
+						`Push token ${pushToken} is not a valid Expo push token`
+					);
+					continue;
+				}
+
+				// Construct a message (see https://docs.expo.io/versions/latest/guides/push-notifications.html)
+				messages.push({
+					to: pushToken,
+					sound: "default",
+					title: "Nouveau test",
+					body:
+						"Une nouvelle offre de test vous correspond, cliquez ici pour la voir !"
+					// data: { withSome: "data" }
+				});
+			}
+			let chunks = expo.chunkPushNotifications(messages);
+			let tickets = [];
+			(async () => {
+				// Send the chunks to the Expo push notification service. There are
+				// different strategies you could use. A simple one is to send one chunk at a
+				// time, which nicely spreads the load out over time:
+				for (let chunk of chunks) {
+					try {
+						let ticketChunk = await expo.sendPushNotificationsAsync(chunk);
+						console.log(ticketChunk);
+						tickets.push(...ticketChunk);
+						// NOTE: If a ticket contains an error code in ticket.details.error, you
+						// must handle it appropriately. The error codes are listed in the Expo
+						// documentation:
+						// https://docs.expo.io/versions/latest/guides/push-notifications#response-format
+					} catch (error) {
+						console.error(error);
+					}
+				}
+			})();
 		})
 		.catch(err => {
 			console.log(err);
