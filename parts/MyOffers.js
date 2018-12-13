@@ -6,10 +6,23 @@ const app = express();
 const Offer = require("../models/Offer");
 const User = require("../models/User");
 
-// Offres en favoris   ========================================================
-app.get("/favories/:id", function(req, res, next) {
+// Offres en favoris avec populate  ==========================================
+app.get("/favorites/:id", function(req, res, next) {
   User.findById(req.params.id)
-    .populate("account.userOffers.favorites")
+    .populate({
+      path: "account.userOffers.favorites",
+      populate: { path: "company" }
+    })
+    .exec(function(err, Offers) {
+      if (err) return handleError(err);
+      res.json(Offers.account.userOffers.favorites);
+    });
+});
+
+// Offres en favoris sans populate  ==========================================
+app.get("/checkfavorites/:id", function(req, res, next) {
+  User.findById(req.params.id)
+    .populate("company")
     .exec(function(err, Offers) {
       if (err) return handleError(err);
       res.json(Offers.account.userOffers.favorites);
@@ -19,7 +32,10 @@ app.get("/favories/:id", function(req, res, next) {
 // Offres en attente de validation   ==========================================
 app.get("/pendingValidation/:id", function(req, res, next) {
   User.findById(req.params.id)
-    .populate("account.userOffers.pendingValidation")
+    .populate({
+      path: "account.userOffers.pendingValidation",
+      populate: { path: "company" }
+    })
     .exec(function(err, Offers) {
       if (err) return handleError(err);
       res.json(Offers.account.userOffers.pendingValidation);
@@ -29,7 +45,10 @@ app.get("/pendingValidation/:id", function(req, res, next) {
 // Offres à venir   ===========================================================
 app.get("/pending/:id", function(req, res, next) {
   User.findById(req.params.id)
-    .populate("account.userOffers.pending")
+    .populate({
+      path: "account.userOffers.pending",
+      populate: { path: "company" }
+    })
     .exec(function(err, Offers) {
       if (err) return handleError(err);
       res.json(Offers.account.userOffers.pending);
@@ -39,7 +58,10 @@ app.get("/pending/:id", function(req, res, next) {
 // Historique   ===============================================================
 app.get("/history/:id", function(req, res, next) {
   User.findById(req.params.id)
-    .populate("account.userOffers.history")
+    .populate({
+      path: "account.userOffers.history",
+      populate: { path: "company" }
+    })
     .exec(function(err, Offers) {
       if (err) return handleError(err);
       res.json(Offers.account.userOffers.history);
