@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const CompanySchema = new mongoose.Schema({
 	name: String,
-	mail: String,
+	email: String,
 	password: String,
 	token: String,
 	hash: String,
@@ -11,7 +11,7 @@ const CompanySchema = new mongoose.Schema({
 		companyName: String,
 
 		companyPhone: String,
-		companyLogo: [String],
+		companyLogo: String,
 		companyIndustry: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "Industry"

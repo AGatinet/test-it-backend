@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-var UserSchema = new mongoose.Schema({
+const UserSchema = new mongoose.Schema({
   email: String,
   password: String,
   token: String, // Le token permettra d'authentifier l'utilisateur
@@ -9,7 +9,7 @@ var UserSchema = new mongoose.Schema({
   account: {
     firstName: String,
     lastName: String,
-    age: Number,
+    birthDate: Date,
     sex: String,
     address: {
       country: String,

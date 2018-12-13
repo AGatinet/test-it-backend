@@ -23,7 +23,8 @@ app.post("/sign_up_company", function(req, res) {
 		salt: salt,
 		hash: hash,
 		companyAccount: {
-			companyName: req.body.companyName
+			companyName: req.body.companyName,
+			companyLogo: req.body.companyLogo
 		}
 	});
 
