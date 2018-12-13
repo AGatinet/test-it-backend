@@ -9,6 +9,57 @@ const encBase64 = require("crypto-js/enc-base64");
 const uid2 = require("uid2");
 var validator = require("validator");
 var User = require("../models/User");
+var mailgun = require("mailgun-js");
+var api_key = "e244c98d83e57f19966f674cbe22d46d-b3780ee5-34be795f";
+var DOMAIN = "sandbox0480596c95704886bafdbd7099cafcf8.mailgun.org";
+var mailgun = require("mailgun-js")({ apiKey: api_key, domain: DOMAIN });
+
+app.post("/log_in/forgot_password", function(req, res) {
+  //Générer nouveau mot de passe
+
+  //Chercher utilisateur dans la base de donnée.
+  // - une fois que c'est bon, modifier le hash et le salt.
+  // - enregistrer le user modifié dans la base de donnée.
+  //    -une fois que c'est bon, envoyer email à l'utilisateur avec son mot de passe.
+  const password = uid2(16);
+  const salt = uid2(16);
+  const hash = SHA256(password + salt).toString(encBase64);
+  console.log("req.body.email ", req.body.email);
+  User.findOne({ email: req.body.email }).exec(function(err, user) {
+    console.log("salut sofiane", err, user);
+    if (!user) return res.status(400).json({ error: "L'email n'existe pas!" });
+    if (user) {
+      console.log("user", user);
+
+      user.hash = hash;
+      user.salt = salt;
+      console.log("user.salt", user.salt);
+      console.log("user.hash", user.hash);
+      user.save(function(err, userSaved) {
+        if (err) {
+          res.status(400).json({ error: err.message });
+        } else {
+          res.status(200).json({ message: "email envoyé" });
+          console.log("usersaved.email", userSaved.email);
+          var data = {
+            from: "Excited User <me@samples.mailgun.org>",
+            to: userSaved.email, // email de l'utilisateur normalement
+            subject: "Test it",
+            text: `Cher utilisateur, je vous redonne vos identifiants de connexion.\n
+            Email: ${userSaved.email} \n
+            Nouveau mot de passe: ${password} \n
+            A bientôt ${userSaved.account.firstName}. \n\n
+            L'équipe de Test it.`
+          };
+
+          mailgun.messages().send(data, function(error, body) {
+            console.log(body);
+          });
+        }
+      });
+    }
+  });
+});
 
 app.post("/sign_up", function(req, res) {
   const password = req.body.password;
@@ -48,9 +99,11 @@ app.post("/log_in", function(req, res, next) {
   User.findOne({ email: req.body.email }).exec(function(err, user) {
     if (err) return next(err.message);
     if (user) {
+      console.log(user);
       if (
         SHA256(req.body.password + user.salt).toString(encBase64) === user.hash
       ) {
+        console.log("popo");
         return res.json({
           _id: user._id,
           token: user.token,
@@ -61,6 +114,51 @@ app.post("/log_in", function(req, res, next) {
       }
     } else {
       return next("User not found");
+    }
+  });
+});
+
+app.post("/facebook/log_in", function(req, res) {
+  User.findOne({ email: req.body.email }).exec(function(err, user) {
+    console.log(user);
+    if (user) {
+      console.log("my best user", user);
+      return res.json({
+        _id: user._id,
+        token: user.token,
+        account: user.account
+      });
+    } else {
+      console.log("my best body", req.body);
+      const newUser = new User({
+        email: req.body.email,
+        token: uid2(16),
+        account: {
+          firstName: req.body.firstName,
+          lastName: req.body.lastName,
+          photo: req.body.photo,
+          sex: req.body.sex === "male" ? "homme" : "femme",
+          birthDate: req.body.birthDate
+        }
+      }); // newUser est une instance du model User
+
+      newUser.save(function(err, userSaved) {
+        if (err) {
+          res.status(400).json({ error: err.message });
+        } else {
+          res.json({
+            _id: userSaved._id,
+            token: userSaved.token,
+            email: userSaved.email,
+            firstName: userSaved.account.firstName,
+            lastName: userSaved.account.lastName,
+            photo: userSaved.account.photo,
+            account: userSaved.account,
+            sex: userSaved.account.sex,
+            birthDate: userSaved.account.birthDate
+          });
+        }
+      });
     }
   });
 });
@@ -96,6 +194,16 @@ app.post("/user/update", function(req, res) {
           res.status(200).json(user);
         }
       });
+    }
+  });
+});
+
+app.post("/freeemail", function(req, res) {
+  User.findOne({ email: req.body.email }).exec((err, user) => {
+    if (user) {
+      return res.json({ message: "Email déjà utilisé" });
+    } else {
+      return res.json({ hasCheckedEmail: true });
     }
   });
 });
