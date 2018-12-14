@@ -105,5 +105,31 @@ app.post("/addToFavorite", function(req, res) {
   });
 });
 
+// 4ème route : Valider sa participation  ==================================================
+app.post("/participation", function(req, res) {
+  let Offer_id = req.body.Offer_id;
+  let User_id = req.body.User_id;
+  if (Offer_id === "" || User_id === "") {
+    return res.json("Identifiant de l'offre ou de l'utilisateur absent !");
+  }
+  User.findOne({ _id: User_id }).exec(function(err, UserFound) {
+    if (err) {
+      res.json(err);
+    } else {
+      // Ajouter à l'historique
+      if (UserFound.account.userOffers.history.indexOf(Offer_id) === -1) {
+        UserFound.account.userOffers.history.push(Offer_id);
+        UserFound.save(function(err, UserSaved) {});
+        // Retirer des favoris
+        let i = UserFound.account.userOffers.favorites.indexOf(Offer_id);
+        UserFound.account.userOffers.favorites.splice(i, 1);
+        UserFound.save(function(err, UserSaved) {
+          res.json("Cette offre à été retirée de l'univers Mes Offres.");
+        });
+      }
+    }
+  });
+});
+
 // Exporter le module
 module.exports = app;

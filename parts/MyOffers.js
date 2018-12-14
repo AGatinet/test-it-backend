@@ -19,13 +19,23 @@ app.get("/favorites/:id", function(req, res, next) {
     });
 });
 
-// Offres en favoris sans populate  ==========================================
+// Vérifier les favoris  ======================================================
 app.get("/checkfavorites/:id", function(req, res, next) {
   User.findById(req.params.id)
     .populate("company")
     .exec(function(err, Offers) {
       if (err) return handleError(err);
       res.json(Offers.account.userOffers.favorites);
+    });
+});
+
+// Vérifier l'historique  =====================================================
+app.get("/checkhistory/:id", function(req, res, next) {
+  User.findById(req.params.id)
+    .populate("company")
+    .exec(function(err, Offers) {
+      if (err) return handleError(err);
+      res.json(Offers.account.userOffers.history);
     });
 });
 
